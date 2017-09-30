@@ -13,7 +13,7 @@ int main(int argc, char *argv[]){
 	
 	MPI_Status  status;
 	
-	int my_id, num_procs,chunk, index, i;
+	int my_id, num_procs,chunk, index, i,j;
 	int mask,rc;  	// error code.
 	int master_sum=0;
 	int current_sum=0;
@@ -25,7 +25,7 @@ int main(int argc, char *argv[]){
 	//******************************************
 	int my_dest, my_source;
 	mask = pow(2,d) - 1;
-
+	
 	if(my_id==master){
 		printf("AVAILABLE PROCESORS: %d" , num_procs);
 		for(i=0;i<n;i++)  array[i] = 1;	
@@ -65,11 +65,7 @@ int main(int argc, char *argv[]){
 		for(i=0;i< n/num_procs; i++)       master_sum = master_sum + array[i];
 		printf("FINAL SUM %d   \n", master_sum);
 	}
-	chunk = n/num_procs;
-	index = my_id*n / num_procs;
-	for(i=index; i < chunk+index; i++)   current_sum = current_sum + array[i];
-	
-	
+
 
 	
 	MPI_Finalize();
