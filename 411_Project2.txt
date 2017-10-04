@@ -1,5 +1,8 @@
 import java.util.*;
 public class Graph{
+	public static void getPath(String init){
+        
+	}
 	public static Hashtable<String,Integer> visited = new Hashtable<String,Integer>();
 	public static Hashtable<String,Integer> finished = new Hashtable<String,Integer>();
 	public static Stack<String> st = new Stack<String>();
@@ -52,11 +55,13 @@ public class Graph{
 		System.out.println("Initial state = "+init_state);
 		String temp;
 		String popped="init";
-		int index_prev;
-		
+		String popped2;
+		int index_prev=init_state.indexOf('0');
+		int index_last_iter=0;
+		boolean FOUND=false;
 		int level =0;
 		int max=0;
-while(max!=1) {
+while(max!=4 && !FOUND) {
 	max++;
 	level=0;
 	popped="init";
@@ -66,39 +71,45 @@ while(max!=1) {
 	System.out.println("********************************Finished "+max);
 	while(popped!=init_state){
 		while(level!= max) {
-		System.out.println();
+		//System.out.println();
 		popped=Graph.st.pop();
 		index_prev= popped.indexOf('0');
-		System.out.println("Pop first "+popped);
+		//System.out.println("Pop first "+popped);
 		temp = Graph.generate(popped);
-		System.out.println(temp);
+		
 			if( Graph.generate(popped)!= "No Neighbors") {
 				Graph.st.push(popped);
-				System.out.println("Push back "+popped);
+				//System.out.println("Push back "+popped);
+				index_last_iter= popped.indexOf('0');
 				Graph.visited.put(popped,1);
-				System.out.println("Visited "+popped);
+				//System.out.println("Visited "+popped);
 				temp = Graph.generate(popped);
 				Graph.st.push(temp);
 				
-				System.out.println("Pushed Neightbors "+Graph.generate(popped));
+				//System.out.println("Pushed Neightbors "+Graph.generate(popped));
 				level++;
-				System.out.println("Level "+level);
-				System.out.println();
+				//System.out.println("Level "+level);
+				//System.out.println();
 			}
 			else {Graph.st.push(popped);
 					break;}
 				
 		}
 		level--; 
+		//System.out.println(Graph.st);
 		popped=Graph.st.pop();
+		if(! Graph.st.empty()) {popped2=Graph.st.pop();
+		index_prev=popped2.indexOf('0');
+		Graph.st.push(popped2);
+		}
 		Graph.finished.put(popped,index_prev);
 		Graph.visited.put(popped,1);
-		System.out.println("FINISHED "+popped + "index "+index_prev);
-		if(Objects.equals(popped,correct)) {System.out.println("FOUND************************");}
+		//System.out.println("FINISHED "+popped + "   index "+index_prev);
+		if(Objects.equals(popped,correct)) {FOUND=true; System.out.println("FOUND************************");}
 		}
 	}
 
-
+	if(FOUND)  Graph.getPath(correct);
 
 
 
