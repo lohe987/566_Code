@@ -1,0 +1,106 @@
+import java.util.*;
+public class Graph{
+	public static Hashtable<String,Integer> visited = new Hashtable<String,Integer>();
+	public static Hashtable<String,Integer> finished = new Hashtable<String,Integer>();
+	public static Stack<String> st = new Stack<String>();
+	public static String generate (String state) {
+		int index = state.indexOf('0');	// Index of blank space in STRING 
+		String nn = "No Neighbors";
+		String state1,state2,state3,state4;
+		char temp;
+		if( !(index>=0 && index <= 3)) { //Top row
+			char [] S=state.toCharArray();
+			temp= S[index-4];
+			S[index-4]=S[index];    S[index]=temp;
+			state1 = new String(S);
+			if(!Graph.visited.containsKey(state1)) {return state1;}
+			
+		}
+		if( !(index>=12 && index <= 15)) { //Bottom row
+			char [] S=state.toCharArray();
+			temp= S[index+4];
+			S[index+4]=S[index];    S[index]=temp;
+			state2 = new String(S);
+			if(!Graph.visited.containsKey(state2)) {return state2;}
+			
+		}
+		if( !(index%4 == 0)) { //Left col
+			char [] S=state.toCharArray();
+			temp= S[index-1];
+			S[index-1]=S[index];    S[index]=temp;
+			state3 = new String(S);
+			if(!Graph.visited.containsKey(state3)) {return state3;}
+			//System.out.println(state3);
+		}
+		if( !(index%4 ==  3)) { //Right col
+			char [] S=state.toCharArray();
+			temp= S[index+1];
+			S[index+1]=S[index];    S[index]=temp;
+			state4 = new String(S);
+			if(!Graph.visited.containsKey(state4)) {return state4;}
+			//System.out.println(state4);
+		}
+		
+		
+		return nn;
+	}
+	
+	public static void main(String[] args) {
+		String correct = "123456789ABCDEF0";
+						//123456789ABCDEF0
+		String init_state = "123456789ABCD0EF";
+		System.out.println("Initial state = "+init_state);
+		String temp;
+		String popped="init";
+		int index_prev;
+		
+		int level =0;
+		int max=0;
+while(max!=1) {
+	max++;
+	level=0;
+	popped="init";
+	Graph.visited.clear();
+	Graph.finished.clear();
+	Graph.st.push(init_state);
+	System.out.println("********************************Finished "+max);
+	while(popped!=init_state){
+		while(level!= max) {
+		System.out.println();
+		popped=Graph.st.pop();
+		index_prev= popped.indexOf('0');
+		System.out.println("Pop first "+popped);
+		temp = Graph.generate(popped);
+		System.out.println(temp);
+			if( Graph.generate(popped)!= "No Neighbors") {
+				Graph.st.push(popped);
+				System.out.println("Push back "+popped);
+				Graph.visited.put(popped,1);
+				System.out.println("Visited "+popped);
+				temp = Graph.generate(popped);
+				Graph.st.push(temp);
+				
+				System.out.println("Pushed Neightbors "+Graph.generate(popped));
+				level++;
+				System.out.println("Level "+level);
+				System.out.println();
+			}
+			else {Graph.st.push(popped);
+					break;}
+				
+		}
+		level--; 
+		popped=Graph.st.pop();
+		Graph.finished.put(popped,index_prev);
+		Graph.visited.put(popped,1);
+		System.out.println("FINISHED "+popped + "index "+index_prev);
+		if(Objects.equals(popped,correct)) {System.out.println("FOUND************************");}
+		}
+	}
+
+
+
+
+
+}	//main bracket
+}	//Class bracket
