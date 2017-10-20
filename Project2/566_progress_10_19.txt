@@ -1,0 +1,94 @@
+// testproj.cpp : Defines the entry point for the console application.
+//
+
+#include "stdafx.h"
+#include <string.h>
+#include <stdlib.h>
+#include <iostream>
+#include <stdio.h>
+#include <math.h>
+using namespace std;
+
+#define row 4
+#define col 4
+double arr[row][col] = { { 10,1,2,3 },{ 2,3,4,5 },{ 5,6,7,8 },{ 2,3,4,8 } };
+double temp[row];
+
+int main()
+{
+	
+	int i, j;
+	int n = row;			//DELETE
+	int nprocs = 16;		//DELETE
+	int n_per_row = row / sqrt(nprocs);
+	int p_per_row = sqrt(nprocs);
+	int temp_size = 0;
+	int my_id;
+	int my_row_begin;
+	int my_row_end;
+	int my_col_begin;
+	int my_col_end;
+	int proc_cur;
+	int sending;
+	/*
+	MPI_Comm row_comm;
+	MPI_Comm col_comm;
+	int my_row = my_id / row;
+	int my_col = my_id % col;
+	MPI_Comm_split(MPI_COMM_WORLD,my_row , my_id, &row_comm);
+	MPI_Comm_split(MPI_COMM_WORLD, my_col, my_id, &col_comm);
+	*/
+
+	
+	for (my_id = 0; my_id < 16; my_id++) {
+		temp_size = 0;
+		my_row_begin = (my_id/row) *(row / sqrt(nprocs));
+		my_row_end = my_row_begin + n_per_row;
+		my_col_begin = (my_id % row) * (row / sqrt(nprocs));
+		my_col_end = my_col_begin + n_per_row;
+		
+		//cout << " my_id " << my_id << "   row_begin" << my_row_begin << endl;
+		//cout << " my_id " << my_id << "   row_end" << my_row_end << endl;;
+		for (int k = 0; k < n; k++) {
+			cout << "Bcast " << my_col_begin <<" "<<  my_col_end  << "   k " << k<<"  my_id "<< my_id<< endl;
+			proc_cur =k / (n_per_row);	// current processor holding arr[k][k] value
+			//MPI_Bcast ( 
+			//cout << "k "<<k << "          proc_cur "<<proc_cur <<"        my_id " <<my_id << endl;
+			if (my_id % p_per_row == proc_cur) {
+				if (my_id == proc_cur)    my_row_begin++;	// dont process a[k][k] = a[k][k]/a[k][k]
+				for (int i = my_row_begin; i < my_row_end; i++) {
+					temp[i] = arr[i][k] / arr[k][k];
+					temp_size++;
+					//cout << "Aik " << arr[i][k] << " Akk " << arr[k][k] <<"     temp "<< temp[i]<< "    i "<<i<< "     k"<<k<< endl;
+				}
+			}
+			if (my_id != proc_cur &&my_id % p_per_row == proc_cur) {	// send data row-wise
+				/*sending = my_id + (row - (my_id %row));	// amount of procs will be receiving temp[i]
+				if (my_id %row != row - 1) {
+					for (i = my_id + 1; i < sending; i++) {
+						cout << "Sending MPI from " << my_id << " to " << i << "    temp_sz " << temp_size << endl;
+						// MPI_SEND
+					}
+				} */
+				// MPI_Bcast ( temp, temp_size, MPI_DOUBLE, my_id, row_comm);
+			}
+
+
+			
+
+	
+				
+
+		}
+	}
+	for (i = 0; i < row; i++)
+	{
+		for (j = 0; j < col; j++)
+		{
+			cout << arr[i][j] << "\t";
+		}
+		cout << endl;
+	}
+    return 0;
+}
+
